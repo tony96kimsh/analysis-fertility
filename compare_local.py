@@ -8,9 +8,25 @@
 
 import csv
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 
-plt.rcParams['font.family'] = 'Malgun Gothic'
+plt.rcParams['font.family'] = 'AppleGothic'
 
+
+'''
+# 사용 가능한 한글 폰트 목록 (우선순위 포함)
+font_candidates = ['Noto Sans CJK KR', 'AppleGothic', 'NanumGothic', 'Malgun Gothic']
+
+# 시스템 폰트 목록에서 사용 가능한 것 찾기
+available_fonts = set(fm.FontProperties(fname=fp).get_name() for fp in fm.findSystemFonts())
+for font in font_candidates:
+    if font in available_fonts:
+        plt.rcParams['font.family'] = font
+        print(f"사용 가능한 폰트 설정됨: {font}")
+        break
+else:
+    print("사용 가능한 한글 폰트를 찾지 못했습니다.")
+'''
 ftt_local_list = [] 
 ftt_local = []
 local_name = []
@@ -65,19 +81,63 @@ with open('./csv/electricity_local.csv', 'r', encoding="UTF-8") as f:
 
     # 값 저장
     for row in data:
-        elc_local_list.append(list(map(float, row[1:])))        
-
-plt.plot(h_elc_year, elc_local_list[0], label=local_name[0])
-plt.show()
-
-
-            
-
-
+        # elc_local_list.append(list(map(float, row[1:])))
+        elc_local_list.append([float(x.replace(',', '')) for x in row[1:]])
 '''
+### list comprehension
+
+elc_local_list.append([float(x.replace(',', '')) for x in row[1:]])
+위 코드를 풀어쓰면,
+
+
+converted = []
+for x in row[1:]:
+    no_comma = x.replace(',', '')    # 문자열에서 , 제거
+    num = float(no_comma)            # 실수로 변환
+    converted.append(num)
+
+elc_local_list.append(converted)
+'''
+
+for i in range(0, len(ftt_local_list)) :    
+    plt.plot(h_elc_year, elc_local_list[i], label=local_name[i])
+plt.title("지역별 전기 소비")
+plt.legend()
+plt.show()            
+
+
 for i in range(0, len(ftt_local_list)) :    
     plt.plot(ftt_local_term, ftt_local_list[i], label=local_name[i])
+plt.title("지익별 출산율")
 plt.legend()
 plt.show()
 
-'''
+## 상관계수 막대 그래프
+import numpy as np
+
+# 출산율에서 2011~2020에 해당하는 연도만 자르기 (2000~2024 중 인덱스 11~20)
+ftt_local_list_cut = [row[11:21] for row in ftt_local_list]
+
+# None을 NaN으로 변환
+ftt_local_list_cut = [[np.nan if v is None else v for v in row] for row in ftt_local_list_cut]
+
+# 상관계수 계산
+correlations = []
+for fert, elec in zip(ftt_local_list_cut, elc_local_list):
+    fert = np.array(fert)
+    elec = np.array(elec)
+    mask = ~np.isnan(fert)
+    if np.any(mask):
+        corr = np.corrcoef(fert[mask], elec[mask])[0, 1]
+        correlations.append(corr)
+    else:
+        correlations.append(np.nan)
+
+# 상관계수 막대그래프
+plt.figure(figsize=(12, 6))
+plt.bar(local_name, correlations)
+plt.xticks(rotation=90)
+plt.title("지역별 출산율과 전기 소비 상관계수 (2011~2020)")
+plt.ylabel("상관계수")
+plt.tight_layout()
+plt.show()
