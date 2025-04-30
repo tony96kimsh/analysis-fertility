@@ -4,7 +4,7 @@ import matplotlib.font_manager as fm
 import matplotlib
 import numpy as np
 
-# ✅ 한글 및 마이너스 기호 깨짐 방지 설정
+# 한글 및 마이너스 기호 깨짐 방지 설정
 plt.rcParams['font.family'] = 'AppleGothic'
 matplotlib.rcParams['axes.unicode_minus'] = False
 

@@ -12,23 +12,27 @@ import matplotlib.font_manager as fm
 
 import numpy as np
 
-plt.rcParams['font.family'] = 'AppleGothic'
-
-
-'''
-# 사용 가능한 한글 폰트 목록 (우선순위 포함)
+# plt.rcParams['font.family'] = 'AppleGothic'
+# 폰트 설정 
+## 컴파일 20초 정도 소요됨
 font_candidates = ['Noto Sans CJK KR', 'AppleGothic', 'NanumGothic', 'Malgun Gothic']
+available_fonts = set()
 
-# 시스템 폰트 목록에서 사용 가능한 것 찾기
-available_fonts = set(fm.FontProperties(fname=fp).get_name() for fp in fm.findSystemFonts())
+for fp in fm.findSystemFonts():
+    try:
+        name = fm.FontProperties(fname=fp).get_name()
+        available_fonts.add(name)
+    except Exception:
+        continue
+
 for font in font_candidates:
     if font in available_fonts:
         plt.rcParams['font.family'] = font
-        print(f"사용 가능한 폰트 설정됨: {font}")
+        print(f"사용 가능한 한글 폰트 설정됨: {font}")
         break
 else:
     print("사용 가능한 한글 폰트를 찾지 못했습니다.")
-'''
+
 ftt_local_list = [] 
 ftt_local = []
 local_name = []
