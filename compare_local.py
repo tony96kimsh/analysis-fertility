@@ -114,26 +114,36 @@ plt.title("지익별 출산율")
 plt.legend()
 plt.show()
 
-## 상관계수 막대 그래프
+'''상관계수 막대 그래프'''
+# 1. 출산율 리스트에서 연도 2011~2020 구간만 잘라내기
+ftt_local_list_cut = []
+for row in ftt_local_list:
+    cut_row = []
+    for i in range(11, 21):  # 2011~2020에 해당하는 인덱스
+        cut_row.append(row[i])
+    ftt_local_list_cut.append(cut_row)
 
-# 출산율에서 2011~2020에 해당하는 연도만 자르기 (2000~2024 중 인덱스 11~20)
-ftt_local_list_cut = [row[11:21] for row in ftt_local_list]
+# 2. None 값을 NaN으로 바꾸기
+for i in range(len(ftt_local_list_cut)):
+    for j in range(len(ftt_local_list_cut[i])):
+        if ftt_local_list_cut[i][j] is None:
+            ftt_local_list_cut[i][j] = np.nan
 
-# None을 NaN으로 변환
-ftt_local_list_cut = [[np.nan if v is None else v for v in row] for row in ftt_local_list_cut]
-
-# 상관계수 계산
+# 3. 각 지역별 출산율과 전기소비 간의 상관계수 계산
 correlations = []
+
 for fert, elec in zip(ftt_local_list_cut, elc_local_list):
-    fert = np.array(fert)
-    elec = np.array(elec)
-    mask = ~np.isnan(fert)
-    if np.any(mask):
-        corr = np.corrcoef(fert[mask], elec[mask])[0, 1]
+    fert_arr = np.array(fert)
+    elec_arr = np.array(elec)
+
+    # NaN이 아닌 값들만 골라내는 마스크
+    mask = ~np.isnan(fert_arr)
+
+    if np.any(mask):  # 유효한 값이 하나라도 있으면
+        corr = np.corrcoef(fert_arr[mask], elec_arr[mask])[0, 1]
         correlations.append(corr)
     else:
         correlations.append(np.nan)
-
 # 상관계수 막대그래프
 plt.figure(figsize=(12, 6))
 plt.bar(local_name, correlations)

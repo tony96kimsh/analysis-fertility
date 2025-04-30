@@ -87,4 +87,4 @@ if len(fertility_arr) >= 2 and len(energy_arr) >= 2:
 else:
     corr = 0
 
-print(f"전국 출산율과 에너지 소비의 상관계수: {corr:.2f}")
+print(f"1981년부터 2020년까지, 총 40년간의 전국 출산율과 에너지 소비의 상관계수: {corr:.2f}")
