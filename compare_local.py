@@ -10,6 +10,8 @@ import csv
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
+import numpy as np
+
 plt.rcParams['font.family'] = 'AppleGothic'
 
 
@@ -113,7 +115,6 @@ plt.legend()
 plt.show()
 
 ## 상관계수 막대 그래프
-import numpy as np
 
 # 출산율에서 2011~2020에 해당하는 연도만 자르기 (2000~2024 중 인덱스 11~20)
 ftt_local_list_cut = [row[11:21] for row in ftt_local_list]
